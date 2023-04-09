@@ -6,16 +6,63 @@
 //
 
 import SwiftUI
+import MapKit
+
+class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
+    var searchResults: [MKLocalSearchCompletion] = []
+
+    func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
+        searchResults = completer.results
+    }
+
+    func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
+        print("Search failed with error: \(error.localizedDescription)")
+    }
+}
 
 struct ContentView: View {
+    
+    @State private var searchQuery: String = ""
+    @State private var searchResults: [MKLocalSearchCompletion] = []
+    private let searchCompleter = MKLocalSearchCompleter()
+    private let searchCompleterDelegate = SearchCompleterDelegate()
+
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+            TextField("Search", text: $searchQuery)
+                .textFieldStyle(RoundedBorderTextFieldStyle())
+                .padding()
+                .onChange(of: searchQuery, perform: { query in
+                    if !query.isEmpty {
+                        searchCompleter.queryFragment = query
+                        searchCompleter.delegate = searchCompleterDelegate
+                        searchCompleter.resultTypes = .address
+                        searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
+                    } else {
+                        searchCompleterDelegate.searchResults = []
+                    }
+                })
+
+            SearchResultsList(searchResults: searchCompleterDelegate.searchResults)
         }
-        .padding()
+    }
+}
+
+struct SearchResultsList: View {
+    
+    var searchResults: [MKLocalSearchCompletion]
+
+    var body: some View {
+        List(searchResults, id: \.self) { result in
+            VStack(alignment: .leading) {
+                Text(result.title)
+                    .font(.headline)
+
+                Text(result.subtitle)
+                    .font(.subheadline)
+                    .foregroundColor(.gray)
+            }
+        }
     }
 }
 
