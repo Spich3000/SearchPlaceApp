@@ -21,11 +21,13 @@ class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
 }
 
 struct ContentView: View {
-    
+
     @State private var searchQuery: String = ""
     @State private var searchResults: [MKLocalSearchCompletion] = []
     private let searchCompleter = MKLocalSearchCompleter()
     private let searchCompleterDelegate = SearchCompleterDelegate()
+    
+    @State var showProgressView: Bool = false
 
     var body: some View {
         VStack {
@@ -34,6 +36,14 @@ struct ContentView: View {
                 .padding()
                 .onChange(of: searchQuery, perform: { query in
                     if !query.isEmpty {
+                        
+                        // For progressView indicator
+                        if searchCompleterDelegate.searchResults == [] {
+                            showProgressView = true
+                        } else {
+                            showProgressView = false
+                        }
+                        
                         searchCompleter.queryFragment = query
                         searchCompleter.delegate = searchCompleterDelegate
                         searchCompleter.resultTypes = .address
@@ -42,14 +52,18 @@ struct ContentView: View {
                         searchCompleterDelegate.searchResults = []
                     }
                 })
-
+            
+            if showProgressView {
+                ProgressView()
+            }
+            
             SearchResultsList(searchResults: searchCompleterDelegate.searchResults)
         }
     }
 }
 
 struct SearchResultsList: View {
-    
+
     var searchResults: [MKLocalSearchCompletion]
 
     var body: some View {
