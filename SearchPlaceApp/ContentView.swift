@@ -22,8 +22,9 @@ class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
 
 struct ContentView: View {
 
-    @State private var searchQuery: String = ""
+    @State private var search: String = ""
     @State private var searchResults: [MKLocalSearchCompletion] = []
+    
     private let searchCompleter = MKLocalSearchCompleter()
     private let searchCompleterDelegate = SearchCompleterDelegate()
     
@@ -31,27 +32,7 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            TextField("Search", text: $searchQuery)
-                .textFieldStyle(RoundedBorderTextFieldStyle())
-                .padding()
-                .onChange(of: searchQuery, perform: { query in
-                    if !query.isEmpty {
-                        
-                        // For progressView indicator
-                        if searchCompleterDelegate.searchResults == [] {
-                            showProgressView = true
-                        } else {
-                            showProgressView = false
-                        }
-                        
-                        searchCompleter.queryFragment = query
-                        searchCompleter.delegate = searchCompleterDelegate
-                        searchCompleter.resultTypes = .address
-                        searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
-                    } else {
-                        searchCompleterDelegate.searchResults = []
-                    }
-                })
+            textField
             
             if showProgressView {
                 ProgressView()
@@ -59,6 +40,33 @@ struct ContentView: View {
             
             SearchResultsList(searchResults: searchCompleterDelegate.searchResults)
         }
+    }
+}
+
+extension ContentView {
+    private var textField: some View {
+        TextField("Search", text: $search)
+            .textFieldStyle(RoundedBorderTextFieldStyle())
+            .padding()
+            .onChange(of: search, perform: { query in
+                if !query.isEmpty {
+                    
+                    // For progressView indicator
+                    if searchCompleterDelegate.searchResults == [] {
+                        showProgressView = true
+                    } else {
+                        showProgressView = false
+                    }
+                    
+                    searchCompleter.queryFragment = query
+                    searchCompleter.delegate = searchCompleterDelegate
+                    searchCompleter.resultTypes = .address
+                    searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
+                    
+                } else {
+                    searchCompleterDelegate.searchResults = []
+                }
+            })
     }
 }
 
