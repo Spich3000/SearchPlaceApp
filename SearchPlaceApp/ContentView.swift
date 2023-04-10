@@ -7,12 +7,18 @@
 
 import SwiftUI
 import MapKit
+import Combine
 
 class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
-    var searchResults: [MKLocalSearchCompletion] = []
+
+    private let subject = PassthroughSubject<[MKLocalSearchCompletion], Never>()
+
+    var resultsPublisher: AnyPublisher<[MKLocalSearchCompletion], Never> {
+        subject.eraseToAnyPublisher()
+    }
 
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
-        searchResults = completer.results
+        subject.send(completer.results)
     }
 
     func completer(_ completer: MKLocalSearchCompleter, didFailWithError error: Error) {
@@ -21,50 +27,47 @@ class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
 }
 
 struct ContentView: View {
-
     @State private var search: String = ""
     @State private var searchResults: [MKLocalSearchCompletion] = []
-    
+    @State private var showProgressView: Bool = false
+
     private let searchCompleter = MKLocalSearchCompleter()
     private let searchCompleterDelegate = SearchCompleterDelegate()
-    
-    @State var showProgressView: Bool = false
 
     var body: some View {
         VStack {
             textField
-            
+
             if showProgressView {
                 ProgressView()
             }
-            
-            SearchResultsList(searchResults: searchCompleterDelegate.searchResults)
+
+            SearchResultsList(searchResults: searchResults)
+        }
+        .onReceive(searchCompleterDelegate.resultsPublisher) { results in
+            searchResults = results
+            showProgressView = false
         }
     }
 }
+
+
 
 extension ContentView {
     private var textField: some View {
         TextField("Search", text: $search)
             .textFieldStyle(RoundedBorderTextFieldStyle())
             .padding()
-            .onChange(of: search, perform: { query in
-                if !query.isEmpty {
-                    
-                    // For progressView indicator
-                    if searchCompleterDelegate.searchResults == [] {
-                        showProgressView = true
-                    } else {
-                        showProgressView = false
-                    }
-                    
-                    searchCompleter.queryFragment = query
+            .onChange(of: search, perform: { _ in
+                if !search.isEmpty {
+                    searchCompleter.queryFragment = search
                     searchCompleter.delegate = searchCompleterDelegate
                     searchCompleter.resultTypes = .address
                     searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
-                    
+                    showProgressView = true
                 } else {
-                    searchCompleterDelegate.searchResults = []
+                    searchResults = []
+                    showProgressView = false
                 }
             })
     }
