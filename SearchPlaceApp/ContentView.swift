@@ -21,16 +21,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             textField
-            
-            if let selectedResult {
-                Text(selectedResult.title)
-                Text(getCountry(selectedResult.subtitle))
-            }
-            
-            if showProgressView {
-                ProgressView()
-            }
-            
+            selectedPlace
+            progressView
             SearchResultsList(selectedResult: $selectedResult, searchResults: searchResults)
         }
         .onReceive(searchCompleterDelegate.resultsPublisher) { results in
@@ -49,6 +41,21 @@ struct ContentView: View {
             }
         }
         return output
+    }
+    
+    // Showing selected place
+    @ViewBuilder var selectedPlace: some View {
+        if let selectedResult {
+            Text(selectedResult.title)
+            Text(getCountry(selectedResult.subtitle))
+        }
+    }
+    
+    // Showing ProgressView
+    @ViewBuilder var progressView: some View {
+        if showProgressView {
+            ProgressView()
+        }
     }
 }
 
