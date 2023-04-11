@@ -11,6 +11,7 @@
 		A2E544D929E3594E008924A0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E544D829E3594E008924A0 /* ContentView.swift */; };
 		A2E544DB29E35950008924A0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2E544DA29E35950008924A0 /* Assets.xcassets */; };
 		A2E544DF29E35950008924A0 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2E544DE29E35950008924A0 /* Preview Assets.xcassets */; };
+		A2E544E629E4DF03008924A0 /* SearchCompleterDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E544E529E4DF03008924A0 /* SearchCompleterDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,7 @@
 		A2E544DA29E35950008924A0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A2E544DC29E35950008924A0 /* SearchPlaceApp.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SearchPlaceApp.entitlements; sourceTree = "<group>"; };
 		A2E544DE29E35950008924A0 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		A2E544E529E4DF03008924A0 /* SearchCompleterDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCompleterDelegate.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,6 +56,7 @@
 			children = (
 				A2E544D629E3594E008924A0 /* SearchPlaceAppApp.swift */,
 				A2E544D829E3594E008924A0 /* ContentView.swift */,
+				A2E544E529E4DF03008924A0 /* SearchCompleterDelegate.swift */,
 				A2E544DA29E35950008924A0 /* Assets.xcassets */,
 				A2E544DC29E35950008924A0 /* SearchPlaceApp.entitlements */,
 				A2E544DD29E35950008924A0 /* Preview Content */,
@@ -141,6 +144,7 @@
 			files = (
 				A2E544D929E3594E008924A0 /* ContentView.swift in Sources */,
 				A2E544D729E3594E008924A0 /* SearchPlaceAppApp.swift in Sources */,
+				A2E544E629E4DF03008924A0 /* SearchCompleterDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
