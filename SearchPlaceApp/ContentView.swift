@@ -13,6 +13,7 @@ struct ContentView: View {
     @State private var searchResults: [MKLocalSearchCompletion] = []
     @State private var showProgressView: Bool = false
 
+    
     private let searchCompleter = MKLocalSearchCompleter()
     private let searchCompleterDelegate = SearchCompleterDelegate()
 
