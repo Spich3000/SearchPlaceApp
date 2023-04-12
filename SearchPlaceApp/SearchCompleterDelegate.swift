@@ -8,7 +8,9 @@
 import MapKit
 import Combine
 
-class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate {
+class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
+
+    let searchCompleter = MKLocalSearchCompleter()
 
     @Published var searchResults: [MKLocalSearchCompletion] = []
     

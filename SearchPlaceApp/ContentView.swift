@@ -10,22 +10,21 @@ import MapKit
 
 struct ContentView: View {
     
+    @StateObject var serchVM = SearchCompleterDelegate()
+    
     @State private var search: String = ""
     @State private var searchResults: [MKLocalSearchCompletion] = []
-    @State private var showProgressView: Bool = false
     @State private var selectedResult: MKLocalSearchCompletion? = nil
-    
-    private let searchCompleter = MKLocalSearchCompleter()
-    private let searchCompleterDelegate = SearchCompleterDelegate()
-    
+    @State private var showProgressView: Bool = false
+
     var body: some View {
         VStack {
             textField
             selectedPlace
             progressView
-            SearchResultsList(selectedResult: $selectedResult, searchResults: searchCompleterDelegate.searchResults)
+            SearchResultsList(selectedResult: $selectedResult, searchResults: serchVM.searchResults)
         }
-        .onReceive(searchCompleterDelegate.$searchResults) { results in
+        .onReceive(serchVM.$searchResults) { results in
             searchResults = results
             showProgressView = false
         }
@@ -34,8 +33,8 @@ struct ContentView: View {
     // Showing selected place
     @ViewBuilder var selectedPlace: some View {
         if let selectedResult {
-            Text("City: \(searchCompleterDelegate.getPlace(selectedResult).city)")
-            Text("Country: \(searchCompleterDelegate.getPlace(selectedResult).country)")
+            Text("City: \(serchVM.getPlace(selectedResult).city)")
+            Text("Country: \(serchVM.getPlace(selectedResult).country)")
         }
     }
     
@@ -47,8 +46,6 @@ struct ContentView: View {
     }
 }
 
-
-
 extension ContentView {
     private var textField: some View {
         TextField("Search", text: $search)
@@ -56,13 +53,13 @@ extension ContentView {
             .padding()
             .onChange(of: search, perform: { _ in
                 if !search.isEmpty {
-                    searchCompleter.queryFragment = search
-                    searchCompleter.delegate = searchCompleterDelegate
-                    searchCompleter.resultTypes = .address
-                    searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
+                    serchVM.searchCompleter.queryFragment = search
+                    serchVM.searchCompleter.delegate = serchVM
+                    serchVM.searchCompleter.resultTypes = .address
+                    serchVM.searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
                     showProgressView = true
                 } else {
-                    searchCompleterDelegate.searchResults = []
+                    serchVM.searchResults = []
                     showProgressView = false
                 }
             })
