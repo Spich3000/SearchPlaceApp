@@ -37,17 +37,12 @@ struct ContentView: View {
     }
     
     func getCountry(_ countryInput: String) -> String {
-        var output: String = ""
         let subtitleComponents = countryInput.split(separator: ",").map(String.init) as [String]
-        if subtitleComponents.count >= 2 {
-            output = subtitleComponents.last ?? String()
-        } else {
-            output = countryInput
-        }
-        return output
+        guard subtitleComponents.count >= 2 else { return countryInput }
+        return subtitleComponents.last ?? ""
     }
     
-    func handleScenario(_ input: MKLocalSearchCompletion?) -> (String, String) {
+    func getPlace(_ input: MKLocalSearchCompletion?) -> (city: String, country: String) {
         var city = getСity(input?.title ?? String())
         var country = ""
         
@@ -70,8 +65,8 @@ struct ContentView: View {
     // Showing selected place
     @ViewBuilder var selectedPlace: some View {
         if let selectedResult {
-            Text("City: \(handleScenario(selectedResult).0)")
-            Text("Country: \(handleScenario(selectedResult).1)")
+            Text("City: \(getPlace(selectedResult).city)")
+            Text("Country: \(getPlace(selectedResult).country)")
         }
     }
     
@@ -132,3 +127,41 @@ struct ContentView_Previews: PreviewProvider {
         ContentView()
     }
 }
+
+
+//struct Place {
+//    var input: MKLocalSearchCompletion?
+//
+//    var city: String {
+//        let titleComponents = input?.title.split(separator: ",").map(String.init) as [String] ?? []
+//        return titleComponents.first ?? ""
+//    }
+//
+//    var country: String {
+//        let subtitleComponents = input?.subtitle.split(separator: ",").map(String.init) as [String] ?? []
+//        return subtitleComponents.last ?? (input?.subtitle ?? "")
+//    }
+//
+//    var isSingleCity: Bool {
+//        if let titleComponents = input?.title {
+//            let components = titleComponents.split(separator: ",").map(String.init) as [String]
+//            return components.count == 1
+//        }
+//        return false
+//    }
+//
+//    var placeTuple: (city: String, country: String) {
+//        let city = isSingleCity ? "" : self.city
+//        let country = input?.subtitle != "" ? self.country : self.country
+//        return (city, country)
+//    }
+//}
+//
+//// Usage
+//@ViewBuilder var selectedPlace: some View {
+//    if let selectedResult = selectedResult {
+//        let place = Place(input: selectedResult)
+//        Text("City: \(place.placeTuple.city)")
+//        Text("Country: \(place.placeTuple.country)")
+//    }
+//}
