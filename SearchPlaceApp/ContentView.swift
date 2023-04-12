@@ -31,23 +31,47 @@ struct ContentView: View {
         }
     }
     
-    func getCountry(_ input: String) -> String {
+    func getСity(_ cityInput: String) -> String {
+        let titleComponents = cityInput.split(separator: ",").map(String.init) as [String]
+        return titleComponents.first ?? String()
+    }
+    
+    func getCountry(_ countryInput: String) -> String {
         var output: String = ""
-        if let subtitleComponents = input.split(separator: ",").map(String.init) as? [String] {
-            if subtitleComponents.count >= 2 {
-                output = (subtitleComponents.last ?? String())
-            } else {
-                output = input
-            }
+        let subtitleComponents = countryInput.split(separator: ",").map(String.init) as [String]
+        if subtitleComponents.count >= 2 {
+            output = subtitleComponents.last ?? String()
+        } else {
+            output = countryInput
         }
         return output
     }
     
+    func handleScenario(_ input: MKLocalSearchCompletion?) -> (String, String) {
+        var city = getСity(input?.title ?? String())
+        var country = ""
+        
+        if input?.subtitle != "" {
+            country = getCountry(input?.subtitle ?? String())
+        } else {
+            if let titleComponents = input?.title {
+                let components = titleComponents.split(separator: ",").map(String.init) as [String]
+                if components.count == 1 {
+                    city = ""
+                }
+            }
+            country = getCountry(input?.title ?? String())
+        }
+        return (city, country)
+    }
+    
+    
+    
     // Showing selected place
     @ViewBuilder var selectedPlace: some View {
         if let selectedResult {
-            Text(selectedResult.title)
-            Text(getCountry(selectedResult.subtitle))
+            Text("City: \(handleScenario(selectedResult).0)")
+            Text("Country: \(handleScenario(selectedResult).1)")
         }
     }
     
