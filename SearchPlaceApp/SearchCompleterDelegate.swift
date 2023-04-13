@@ -8,12 +8,15 @@
 import MapKit
 import Combine
 
+// ViewModel
+
 class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate, ObservableObject {
 
     let searchCompleter = MKLocalSearchCompleter()
 
     @Published var searchResults: [MKLocalSearchCompletion] = []
-    
+    @Published var selectedResult: MKLocalSearchCompletion? = nil
+
     func completerDidUpdateResults(_ completer: MKLocalSearchCompleter) {
         searchResults = completer.results
     }
@@ -22,29 +25,29 @@ class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate, Observa
         print("Search failed with error: \(error.localizedDescription)")
     }
     
-    func getСity(_ cityInput: [String]) -> String {
+    private func getСity(_ cityInput: [String]) -> String {
         cityInput.first ?? ""
     }
     
-    func getCountry(_ countryInput: [String]) -> String {
+    private func getCountry(_ countryInput: [String]) -> String {
         guard countryInput.count >= 2 else { return countryInput.first ?? "" }
         return countryInput.last ?? ""
     }
     
-    func getPlace(_ input: MKLocalSearchCompletion?) -> (city: String, country: String) {
-        let cityComponents = input?.title.components(separatedBy: ",") ?? []
-        let countryComponents = input?.subtitle.components(separatedBy: ",") ?? []
+    func getPlace() -> (city: String, country: String) {
+        let cityComponents = selectedResult?.title.components(separatedBy: ",") ?? []
+        let countryComponents = selectedResult?.subtitle.components(separatedBy: ",") ?? []
         
         var city = getСity(cityComponents)
         var country = getCountry(countryComponents)
         
-        if input?.subtitle == "" {
+        if selectedResult?.subtitle == "" {
             if cityComponents.count == 1 {
-                city = ""
+                city = "" // Case with country in title components
             }
-            country = getCountry(cityComponents)
+            country = getCountry(cityComponents) // Get country from title components
         }
-        
         return (city, country)
     }
+    
 }

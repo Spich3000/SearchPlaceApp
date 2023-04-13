@@ -10,11 +10,9 @@ import MapKit
 
 struct ContentView: View {
     
-    @StateObject var serchVM = SearchCompleterDelegate()
+    @StateObject var searchVM = SearchCompleterDelegate()
     
     @State private var search: String = ""
-    @State private var searchResults: [MKLocalSearchCompletion] = []
-    @State private var selectedResult: MKLocalSearchCompletion? = nil
     @State private var showProgressView: Bool = false
 
     var body: some View {
@@ -22,19 +20,18 @@ struct ContentView: View {
             textField
             selectedPlace
             progressView
-            SearchResultsList(selectedResult: $selectedResult, searchResults: serchVM.searchResults)
+            SearchResultsList(serchVM: searchVM)
         }
-        .onReceive(serchVM.$searchResults) { results in
-            searchResults = results
+        .onReceive(searchVM.$searchResults) { _ in
             showProgressView = false
         }
     }
     
     // Showing selected place
     @ViewBuilder var selectedPlace: some View {
-        if let selectedResult {
-            Text("City: \(serchVM.getPlace(selectedResult).city)")
-            Text("Country: \(serchVM.getPlace(selectedResult).country)")
+        if searchVM.selectedResult != nil {
+            Text("City: \(searchVM.getPlace().city)")
+            Text("Country: \(searchVM.getPlace().country)")
         }
     }
     
@@ -53,14 +50,16 @@ extension ContentView {
             .padding()
             .onChange(of: search, perform: { _ in
                 if !search.isEmpty {
-                    serchVM.searchCompleter.queryFragment = search
-                    serchVM.searchCompleter.delegate = serchVM
-                    serchVM.searchCompleter.resultTypes = .address
-                    serchVM.searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
+                    searchVM.searchCompleter.queryFragment = search
+                    searchVM.searchCompleter.delegate = searchVM
+                    searchVM.searchCompleter.resultTypes = .address
+                    searchVM.searchCompleter.region = MKCoordinateRegion(MKMapRect.world)
                     showProgressView = true
                 } else {
-                    serchVM.searchResults = []
-                    showProgressView = false
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        searchVM.searchResults = []
+                        showProgressView = false
+                    }
                 }
             })
     }
@@ -68,11 +67,10 @@ extension ContentView {
 
 struct SearchResultsList: View {
     
-    @Binding var selectedResult: MKLocalSearchCompletion?
-    var searchResults: [MKLocalSearchCompletion]
+    @ObservedObject var serchVM: SearchCompleterDelegate
     
     var body: some View {
-        List(searchResults, id: \.self) { result in
+        List(serchVM.searchResults, id: \.self) { result in
             VStack(alignment: .leading) {
                 Text(result.title)
                     .font(.headline)
@@ -82,7 +80,7 @@ struct SearchResultsList: View {
                     .foregroundColor(.gray)
             }
             .onTapGesture {
-                selectedResult = result
+                serchVM.selectedResult = result
             }
         }
     }
