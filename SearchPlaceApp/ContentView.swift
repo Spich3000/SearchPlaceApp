@@ -23,7 +23,7 @@ struct ContentView: View {
             SearchResultsList(serchVM: searchVM)
         }
         .onReceive(searchVM.$searchResults) { _ in
-            showProgressView = false
+            showProgressView = false // Shutdown progressbar when we get a result of searching
         }
     }
     
@@ -57,7 +57,7 @@ extension ContentView {
                     showProgressView = true
                 } else {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        searchVM.searchResults = []
+                        searchVM.searchResults = [] // Clear search list when search field is empty
                         showProgressView = false
                     }
                 }
