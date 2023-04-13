@@ -35,8 +35,8 @@ class SearchCompleterDelegate: NSObject, MKLocalSearchCompleterDelegate, Observa
     }
     
     func getPlace() -> (city: String, country: String) {
-        let cityComponents = selectedResult?.title.components(separatedBy: ",") ?? []
-        let countryComponents = selectedResult?.subtitle.components(separatedBy: ",") ?? []
+        let cityComponents = selectedResult?.title.components(separatedBy: ",") ?? [] // Prepare city components
+        let countryComponents = selectedResult?.subtitle.components(separatedBy: ",") ?? [] // Prepare country components
         
         var city = getСity(cityComponents)
         var country = getCountry(countryComponents)
